@@ -16,10 +16,14 @@ const StoneModal: React.FC<StoneModalProps> = ({ open, setOpen }) => {
   return (
     <div className={styles.modal} onClick={() => setOpen(null)}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.close} onClick={() => setOpen(null)}>
-          ×
-        </button>
-
+        <div className={styles.modalHeader}>
+          <button className={styles.close} onClick={() => setOpen(null)}>
+            ×
+          </button>
+          <h2>
+            {open.attributes.find((a) => a.trait_type === "Stone Type")?.value}
+          </h2>
+        </div>
         <div className={styles.modalBody}>
           <img src={open.image} alt={open.name} width="100%" height="100%" />
           <div>
