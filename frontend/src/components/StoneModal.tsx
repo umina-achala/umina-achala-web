@@ -1,5 +1,5 @@
 // src/components/StoneModal.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { Rumi } from "../types/rumi";
 import styles from "./StoneModal.module.css";
 import { useTranslation } from "react-i18next";
@@ -11,28 +11,37 @@ interface StoneModalProps {
 
 const StoneModal: React.FC<StoneModalProps> = ({ open, setOpen }) => {
   const { t } = useTranslation();
+
+  // Escape key handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(null);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, setOpen]);
+
   if (!open) return null;
 
   return (
     <div className={styles.modal} onClick={() => setOpen(null)}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
-          <button className={styles.close} onClick={() => setOpen(null)}>
-            ×
-          </button>
           <h2>
             {open.attributes.find((a) => a.trait_type === "Stone Type")?.value}
           </h2>
+          <button className={styles.close} onClick={() => setOpen(null)}>×</button>
         </div>
         <div className={styles.modalBody}>
-          <img src={open.image} alt={open.name} width="100%" height="100%" />
+          <img src={open.image} alt={open.name} />
           <div>
-            <h2>
-              {
-                open.attributes.find((a) => a.trait_type === "Stone Type")
-                  ?.value
-              }
-            </h2>
             <div className={styles.attributeList}>
               <dl>
                 {open.attributes
@@ -62,8 +71,6 @@ const StoneModal: React.FC<StoneModalProps> = ({ open, setOpen }) => {
                   </a>
                 </p>
               )}
-
-              {/* Compliance HCS link (from hcs_compliance_topic) */}
               {open.properties.hcs_compliance_topic && (
                 <p>
                   <a
